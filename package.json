@@ -2,7 +2,18 @@
   "name": "generate-request",
   "displayName": "generate-request",
   "description": "语忆前端自动生成接口代码",
+  "main": "./extension.js",
   "version": "0.0.1",
+  "publisher": "tchen",
+  "repository": {
+    "url": "git@github.com:895433995/snippets-for-react.git"
+  },
+  "scripts": {
+    "publish-vsce": "vsce publish",
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
   "engines": {
     "vscode": "^1.61.0"
   },
@@ -12,7 +23,6 @@
   "activationEvents": [
     "onCommand:generate-request.interfaceCode"
   ],
-  "main": "./extension.js",
   "contributes": {
     "commands": [
       {
@@ -43,11 +53,6 @@
         }
       }
     ]
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "node ./test/runTest.js"
   },
   "devDependencies": {
     "@types/vscode": "^1.61.0",
