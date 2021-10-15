@@ -1,0 +1,66 @@
+{
+  "name": "generate-request",
+  "displayName": "generate-request",
+  "description": "语忆前端自动生成接口代码",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.61.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:generate-request.interfaceCode"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "generate-request.interfaceCode",
+        "title": "Interface Code"
+      }
+    ],
+    "configuration": [
+      {
+        "type": "object",
+        "title": "generate-request",
+        "properties": {
+          "generateRequest.apiHost": {
+            "type": "string",
+            "default": "http://10.101.21.105:19999",
+            "description": "接口文档地址：协议 + 域名 + 端口号"
+          },
+          "generateRequest.username": {
+            "type": "string",
+            "default": "",
+            "description": "账号"
+          },
+          "generateRequest.password": {
+            "type": "string",
+            "default": "",
+            "description": "密码"
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.61.0",
+    "@types/glob": "^7.1.4",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "14.x",
+    "eslint": "^7.32.0",
+    "glob": "^7.1.7",
+    "mocha": "^9.1.1",
+    "typescript": "^4.4.3",
+    "@vscode/test-electron": "^1.6.2"
+  },
+  "dependencies": {
+    "axios": "^0.23.0"
+  }
+}
