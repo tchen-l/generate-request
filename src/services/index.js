@@ -1,10 +1,12 @@
+const sha256 = require('sha256')
 const { axios, authInfo } = require('../api')
 
 const login = (username, password) => {
   if (authInfo.cookie) {
     return Promise.resolve({ code: 200 })
   }
-  return axios.post('/login', { username, password })
+  const secretPassword = sha256(password)
+  return axios.post('/login', { username, password: secretPassword })
 }
 
 const verify = () => {

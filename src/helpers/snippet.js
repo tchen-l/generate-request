@@ -1,3 +1,5 @@
+const { apiHost } = require('../config')
+
 const TypeNameMapping = {
   Number: 'number',
   String: 'string'
@@ -51,11 +53,7 @@ function formatPathParams({ path = '', pathParams = [] }) {
     const findParam = pathParams.find(n => underlineToCamel(n.name) === key) || {}
     // 转驼峰
     const camelKey = underlineToCamel(key)
-    let description = findParam.description || ""
-    if (camelKey === 'companyId') {
-      description += ' （此处可不传，已经在 axios 拦截器统一处理）'
-    }
-    return { typeName: 'String', ...findParam, description, name: camelKey }
+    return { typeName: 'String', description: '', ...findParam, name: camelKey }
   })
 
   return { finalPathParamsKeys, finalPathParams }
@@ -72,7 +70,6 @@ function getParamsString({ methodTypeName = '', pathParamsKeys = [] }) {
 }
 
 function getSnippetTemplate(result) {
-  console.log('[ result ]', result);
   const { id, name, description, group, params, path, method } = result || {}
   const { projectId } = group || {}
   const { pathParams = [], inputs = [] } = params || {}
@@ -88,10 +85,16 @@ function getSnippetTemplate(result) {
   /**
    * 接口文档网址
    */
-  const see = `http://10.101.21.105:19999/interface/detail/?pid=${projectId}&id=${id}`
+  const see = `${apiHost}/interface/detail/?pid=${projectId}&id=${id}`
 
   const paramsString = [...inputs, ...finalPathParams].reduce((prev, cur, index) => {
-    return `${prev}${index === 0 ? '' : '\n'} * @param {${getTypeName(cur.typeName, cur.isArray)}} data.${cur.name} ${cur.description}`
+    const { name, typeName, isArray, description } = cur
+    const finalTypeName = getTypeName(typeName, isArray)
+    let finalDescription = description
+    if (name === 'companyId') {
+      finalDescription += '（此处可不传，已经在 axios 拦截器统一处理）'
+    }
+    return `${prev}${index === 0 ? '' : '\n'} * @param {${finalTypeName}} data.${name} ${finalDescription}`
   }, '')
   /**
    * 注释信息模板
