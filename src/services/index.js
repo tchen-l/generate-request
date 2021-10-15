@@ -33,6 +33,11 @@ const auth = (username, password) => {
   })
 }
 
+const getInterfaceInfo = (id) => {
+  return axios.get(`/interfaces/${id}`)
+}
+
 module.exports = {
-  auth
+  auth,
+  getInterfaceInfo
 }

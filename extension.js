@@ -2,8 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const { apiHost, username, password } = require('./src/config')
-const { axios } = require('./src/api')
-const { auth } = require('./src/services')
+const { auth, getInterfaceInfo } = require('./src/services')
 const { getSnippetTemplate } = require('./src/helpers/snippet')
 const { SnippetString } = vscode
 
@@ -27,18 +26,17 @@ function activate(context) {
     }
     vscode.window.showInputBox({
       title: '接口信息',
-      value: `${apiHost}/api/interfaces/{id}`,
-      placeHolder: "请补全接口信息",
-      prompt: '只需修改接口 {id}。'
-    }).then(async url => {
+      value: '{id}',
+      placeHolder: "请输入接口id",
+      prompt: '只需填写接口 {id}。'
+    }).then(async id => {
       try {
-        if (!url) {
+        if (!id) {
           return
         }
 
-        // await auth('chentao', '059a00192592d5444bc0caad7203f98b506332e2cf7abb35d684ea9bf7c18f08')
         await auth(username, password)
-        const res = await axios.get(url)
+        const res = await getInterfaceInfo(id)
         const { code, result, msg } = res || {}
 
         if (code !== 200) {
