@@ -3,7 +3,7 @@
   "displayName": "generate-request",
   "description": "语忆前端自动生成接口代码",
   "main": "./extension.js",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "publisher": "tchen",
   "repository": {
     "url": "git@github.com:895433995/snippets-for-react.git"
@@ -15,7 +15,7 @@
     "test": "node ./test/runTest.js"
   },
   "engines": {
-    "vscode": "^1.61.0"
+    "vscode": "^1.59.0"
   },
   "categories": [
     "Other"
@@ -55,7 +55,7 @@
     ]
   },
   "devDependencies": {
-    "@types/vscode": "^1.61.0",
+    "@types/vscode": "^1.59.0",
     "@types/glob": "^7.1.4",
     "@types/mocha": "^9.0.0",
     "@types/node": "14.x",
