@@ -18,7 +18,7 @@
 
 Users appreciate release notes as you update your extension.
 
-### 0.0.1
+### 0.0.5
 
 ### For more information
 

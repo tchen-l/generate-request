@@ -2,10 +2,11 @@ const { apiHost } = require('../config')
 
 const TypeNameMapping = {
   Number: 'number',
-  String: 'string'
+  String: 'string',
+  Boolean: 'boolean'
 }
 
-const RequestMethoMapping = {
+const RequestMethodMapping = {
   GET: 'get',
   POST: 'post',
   PUT: 'put',
@@ -24,7 +25,7 @@ function getTypeName(typeName, isArray = 0) {
 }
 
 function getMethodTypeName(methodTypeName) {
-  return RequestMethoMapping[methodTypeName] || methodTypeName
+  return RequestMethodMapping[methodTypeName] || methodTypeName
 }
 
 /**
@@ -88,54 +89,48 @@ function getSnippetTemplate(result) {
   const see = `${apiHost}/interface/detail/?pid=${projectId}&id=${id}`
 
   const paramsString = [...inputs, ...finalPathParams].reduce((prev, cur, index) => {
-    const { name, typeName, isArray, description } = cur
+    const { name, typeName, isArray, description = '' } = cur
     const finalTypeName = getTypeName(typeName, isArray)
-    let finalDescription = description
-    if (name === 'companyId') {
-      finalDescription += '（此处可不传，已经在 axios 拦截器统一处理）'
-    }
-    return `${prev}${index === 0 ? '' : '\n'} * @param {${finalTypeName}} data.${name} ${finalDescription}`
+
+    return `${prev}${index === 0 ? '' : '\n'} * @param {${finalTypeName}} data.${name} ${description}`
   }, '')
   /**
    * 注释信息模板
    */
-  const descTemplate = `
-/**
+  const descTemplate = `/**
  * ${name}
  * @see ${see}
  * @description ${description}
- * 
+ *
  * @param {object} data 请求参数
 ${paramsString}
  * @returns {Promise} AxiosPropmise
 */`
 
   if (!finalPathParams || !finalPathParams.length) {
-    return `
-${descTemplate}
+    return `${descTemplate}
 export function \${1:fetchData}(data) {
   return request({
     url: '${finalPath}',
     method: '${methodTypeName}',
     ${getParamsString({ methodTypeName, pathParamsKeys: finalPathParamsKeys })},
   });
-};
+}
 
 `
   }
 
   finalPath = replacePath(finalPath)
 
-  return `
-${descTemplate}
+  return `${descTemplate}
 export function \${1:fetchData}(data) {
   const { ${finalPathParamsKeys.join(', ')}, ...restData } = data;
   return request({
-    url: \`${String(finalPath)}\`,
+    url: \`${finalPath}\`,
     method: '${methodTypeName}',
     ${getParamsString({ methodTypeName, pathParamsKeys: finalPathParamsKeys })},
   });
-};
+}
 
 `
 }
