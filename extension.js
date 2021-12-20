@@ -5,6 +5,7 @@ const { username, password } = require('./src/config')
 const { auth, getInterfaceInfo } = require('./src/services')
 const { transformResult } = require('./src/helpers/transform')
 const { getSnippetTemplate } = require('./src/helpers/snippet')
+const { authInfo } = require('./src/api')
 const { SnippetString } = vscode
 
 // this method is called when your extension is activated
@@ -41,7 +42,8 @@ function activate(context) {
         const { statusCode, apiInfo } = res || {}
 
         if (statusCode !== '000000') {
-          throw Error('请求接口信息失败')
+          authInfo.cookie = undefined
+          throw Error('请求接口信息失败，请重试')
         }
 
         const transformData = transformResult(apiInfo)

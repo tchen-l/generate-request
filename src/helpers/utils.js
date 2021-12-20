@@ -3,7 +3,7 @@
  * @param {string} str name_value
  * @returns nameValue
  */
-function underlineToCamel(str) {
+function underlineToCamel(str = "") {
   return str.replace(/\-(\w)/g, (all, letter) => letter.toUpperCase())
 }
 
