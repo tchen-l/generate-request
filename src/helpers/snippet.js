@@ -7,14 +7,14 @@ function replacePath(path = '') {
   })
 }
 
-function getParamsString({ methodTypeName = '' }) {
-  return ['post', 'put', 'delete', 'patch'].includes(methodTypeName) ? 'data' : 'params'
+function getParamsString({ methodType = '' }) {
+  return ['post', 'put', 'delete', 'patch'].includes(methodType) ? 'data' : 'params'
 }
 
 function getSnippetTemplate(result) {
   const { 
     see,
-    methodTypeName,
+    methodType,
     apiName = '',
     apiURI = '',
     restfulParams = [],
@@ -26,7 +26,7 @@ function getSnippetTemplate(result) {
 
   const finalPathParamKeys = restfulParams.map(param => param.key)
 
-  const paramsString = getParamsString({ methodTypeName })
+  const paramsString = getParamsString({ methodType })
   const paramsDocString = [...urlParams, ...restfulParams, ...requestParams].reduce((prev, cur, index) => {
     const { key, type, required, name = '' } = cur
     return `${prev}${index === 0 ? '' : '\n'} * @param {${type}} ${paramsString}.${key} ${name}${required ? '(必填)' : ''}`
@@ -48,11 +48,10 @@ ${paramsDocString}
 export function \${1:fetchData}(${paramsString}) {
   return request({
     url: '${finalPath}',
-    method: '${methodTypeName}',
+    method: '${methodType}',
     ${paramsString},
   });
 }
-
 `
   }
 
@@ -62,11 +61,10 @@ export function \${1:fetchData}(${paramsString}) {
 export function \${1:fetchData}({ ${finalPathParamKeys.join(', ')}, ...${paramsString} }) {
   return request({
     url: \`${finalPath}\`,
-    method: '${methodTypeName}',
+    method: '${methodType}',
     ${paramsString},
   });
 }
-
 `
 }
 

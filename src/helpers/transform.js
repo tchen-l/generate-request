@@ -8,20 +8,21 @@ const RequestMethodMapping = {
   3: 'delete'
 }
 
-const TypeNameMapping = {
+const TypeMapping = {
   0: 'string',
   3: 'number',
   7: 'string',
+  8: 'boolean',
   11: 'string',
   12: 'array',
 }
 
-function getMethodTypeName(methodType) {
+function getMethodType(methodType) {
   return RequestMethodMapping[methodType] || 'get'
 }
 
 function getParamTypeName(paramType) {
-  return TypeNameMapping[paramType] || ''
+  return TypeMapping[paramType] || ''
 }
 
 function formatParams(params = []) {
@@ -60,7 +61,7 @@ function transformResult(result) {
   /**
    * 请求名 method
    */
-  const methodTypeName = getMethodTypeName(apiRequestType)
+  const methodType = getMethodType(apiRequestType)
 
   const urlParams = formatParams(urlParam)
   const restfulParams = formatParams(restfulParam)
@@ -70,7 +71,7 @@ function transformResult(result) {
     apiName,
     see,
     apiURI,
-    methodTypeName,
+    methodType,
     urlParams,
     restfulParams,
     requestParams
