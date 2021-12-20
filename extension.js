@@ -1,8 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
-const { apiHost, username, password } = require('./src/config')
+const { username, password } = require('./src/config')
 const { auth, getInterfaceInfo } = require('./src/services')
+const { transformResult } = require('./src/helpers/transform')
 const { getSnippetTemplate } = require('./src/helpers/snippet')
 const { SnippetString } = vscode
 
@@ -20,30 +21,34 @@ function activate(context) {
     // The code you place here will be executed every time your command is executed
     const activeTextEditor = vscode.window.activeTextEditor
 
-    if ([apiHost, username, password].includes('')) {
+    if ([username, password].includes('')) {
       vscode.window.showErrorMessage('请先前往扩展完善基本信息！')
       return
     }
     vscode.window.showInputBox({
       title: '接口信息',
-      value: '{id}',
-      placeHolder: "请输入接口id",
-      prompt: '只需填写接口 {id}。'
-    }).then(async id => {
+      value: '{apiID}',
+      placeHolder: "请输入接口 apiID",
+      prompt: '只需填写接口 {apiID}。'
+    }).then(async apiID => {
       try {
-        if (!id) {
+        if (!apiID) {
           return
         }
 
         await auth(username, password)
-        const res = await getInterfaceInfo(id)
-        const { code, result, msg } = res || {}
+        const res = await getInterfaceInfo({ apiID })
+        const { statusCode, apiInfo } = res || {}
 
-        if (code !== 200) {
-          throw Error(msg || '请求接口信息失败')
+        if (statusCode !== '000000') {
+          throw Error('请求接口信息失败')
         }
-        const snippetTemp = getSnippetTemplate(result)
+
+        const transformData = transformResult(apiInfo)
+        const snippetTemp = getSnippetTemplate(transformData)
+
         const snippet = new SnippetString(snippetTemp)
+
         if (!activeTextEditor) {
           throw Error('当前激活的编辑器不是文件或者没有文件被打开！')
         }

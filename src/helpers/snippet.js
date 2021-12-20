@@ -1,119 +1,55 @@
-const { apiHost } = require('../config')
-
-const TypeNameMapping = {
-  Number: 'number',
-  String: 'string',
-  Boolean: 'boolean'
-}
-
-const RequestMethodMapping = {
-  GET: 'get',
-  POST: 'post',
-  PUT: 'put',
-  PATCH: 'patch',
-  DELETE: 'delete',
-  OPTIONS: 'options',
-  HEAD: 'head'
-}
-
-function getTypeName(typeName, isArray = 0) {
-  let finalTypeName = TypeNameMapping[typeName] || "object"
-  if (isArray) {
-    finalTypeName = `${finalTypeName}[]`
-  }
-  return finalTypeName
-}
-
-function getMethodTypeName(methodTypeName) {
-  return RequestMethodMapping[methodTypeName] || methodTypeName
-}
-
-/**
- * 横线转换驼峰
- * @param {string} str name_value
- * @returns nameValue
- */
-function underlineToCamel(str) {
-  return str.replace(/\-(\w)/g, (all, letter) => letter.toUpperCase())
-}
+const { underlineToCamel } = require('./utils')
 
 function replacePath(path = '') {
-  return path.replace(/\{.*\}/g, (key) => {
-    const finalKey = underlineToCamel(key.replace(/(\{)|(\})/g, ''))
-    return '\\\$\{' + finalKey + '\}'
+  return path.replace(/\{(.+?)\}/g, (key) => {
+    const finalKey = underlineToCamel(key, '')
+    return '\\\$' + finalKey + ''
   })
 }
 
-function formatPathParams({ path = '', pathParams = [] }) {
-  /**
-   * 接口文档可能出现以下情况：
-   * path 中有参数，但是 pathParams 数组为空，为了容错，直接从 path 中取出参数
-   */
-  const finalPathParamsKeys = (path.match(/\{.*\}/g) || []).map(n => underlineToCamel(n.replace(/(\{)|(\})/g, '')))
-  const finalPathParams = finalPathParamsKeys.map(key => {
-    const findParam = pathParams.find(n => underlineToCamel(n.name) === key) || {}
-    // 转驼峰
-    const camelKey = underlineToCamel(key)
-    return { typeName: 'String', description: '', ...findParam, name: camelKey }
-  })
-
-  return { finalPathParamsKeys, finalPathParams }
-}
-
-function getParamsString({ methodTypeName = '', pathParamsKeys = [] }) {
-  let str = ''
-  if (!pathParamsKeys.length) {
-    str = ['post', 'put', 'delete', 'patch'].includes(methodTypeName) ? 'data' : 'params: data'
-    return str
-  }
-  str = ['post', 'put', 'delete', 'patch'].includes(methodTypeName) ? 'data: restData' : 'params: restData'
-  return str
+function getParamsString({ methodTypeName = '' }) {
+  return ['post', 'put', 'delete', 'patch'].includes(methodTypeName) ? 'data' : 'params'
 }
 
 function getSnippetTemplate(result) {
-  const { id, name, description, group, params, path, method } = result || {}
-  const { projectId } = group || {}
-  const { pathParams = [], inputs = [] } = params || {}
-  /**
-   * 请求名 method
-   */
-  const methodTypeName = getMethodTypeName(method)
-  /**
-   * url 中的请求参数
-   */
-  const { finalPathParamsKeys, finalPathParams } = formatPathParams({ path, pathParams })
-  let finalPath = path
-  /**
-   * 接口文档网址
-   */
-  const see = `${apiHost}/interface/detail/?pid=${projectId}&id=${id}`
+  const { 
+    see,
+    methodTypeName,
+    apiName = '',
+    apiURI = '',
+    restfulParams = [],
+    urlParams = [],
+    requestParams = []
+  } = result || {}
 
-  const paramsString = [...inputs, ...finalPathParams].reduce((prev, cur, index) => {
-    const { name, typeName, isArray, description = '' } = cur
-    const finalTypeName = getTypeName(typeName, isArray)
+  let finalPath = apiURI
 
-    return `${prev}${index === 0 ? '' : '\n'} * @param {${finalTypeName}} data.${name} ${description}`
+  const finalPathParamKeys = restfulParams.map(param => param.key)
+
+  const paramsString = getParamsString({ methodTypeName })
+  const paramsDocString = [...urlParams, ...restfulParams, ...requestParams].reduce((prev, cur, index) => {
+    const { key, type, required, name = '' } = cur
+    return `${prev}${index === 0 ? '' : '\n'} * @param {${type}} ${paramsString}.${key} ${name}${required ? '(必填)' : ''}`
   }, '')
   /**
    * 注释信息模板
    */
   const descTemplate = `/**
- * ${name}
+ * ${apiName}
  * @see ${see}
- * @description ${description}
  *
- * @param {object} data 请求参数
-${paramsString}
+ * @param {object} ${paramsString} 请求参数
+${paramsDocString}
  * @returns {Promise} AxiosPropmise
 */`
 
-  if (!finalPathParams || !finalPathParams.length) {
+  if (!finalPathParamKeys || !finalPathParamKeys.length) {
     return `${descTemplate}
-export function \${1:fetchData}(data) {
+export function \${1:fetchData}(${paramsString}) {
   return request({
     url: '${finalPath}',
     method: '${methodTypeName}',
-    ${getParamsString({ methodTypeName, pathParamsKeys: finalPathParamsKeys })},
+    ${paramsString},
   });
 }
 
@@ -123,12 +59,11 @@ export function \${1:fetchData}(data) {
   finalPath = replacePath(finalPath)
 
   return `${descTemplate}
-export function \${1:fetchData}(data) {
-  const { ${finalPathParamsKeys.join(', ')}, ...restData } = data;
+export function \${1:fetchData}({ ${finalPathParamKeys.join(', ')}, ...${paramsString} }) {
   return request({
     url: \`${finalPath}\`,
     method: '${methodTypeName}',
-    ${getParamsString({ methodTypeName, pathParamsKeys: finalPathParamsKeys })},
+    ${paramsString},
   });
 }
 

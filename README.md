@@ -10,7 +10,6 @@
 
 扩展设置项:
 
-* `generateRequest.apiHost`: http://localhost:5000
 * `generateRequest.username`: guest
 * `generateRequest.password`: 123456
 
@@ -18,7 +17,7 @@
 
 Users appreciate release notes as you update your extension.
 
-### 0.0.5
+### 0.0.6
 
 ### For more information
 

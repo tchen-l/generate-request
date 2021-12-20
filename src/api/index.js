@@ -1,19 +1,30 @@
 const axios = require('axios').default
+const qs = require('qs')
 const { apiHost } = require('../config')
-const authInfo = { cookie: undefined }
-const service = axios.create({ baseURL: `${apiHost}/api`, withCredentials: true })
+const authInfo = { cookie: undefined, spaceKey: undefined }
+
+const service = axios.create({
+  baseURL: apiHost,
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+})
 
 service.interceptors.request.use(config => {
+  config.data = qs.stringify(config.data) // 转为formdata数据格式
   if (authInfo.cookie) {
-    config.headers['Cookie'] = authInfo.cookie
+    config.headers['cookie'] = authInfo.cookie
   }
+
   return config
 })
 
 service.interceptors.response.use(response => {
   const res = response.data
+
   if (!authInfo.cookie) {
-    authInfo.cookie = response.headers['set-cookie']
+    const findCookieItem = response.headers['set-cookie'].find(item => item.includes('userToken')).split(';')
+    authInfo.cookie = Array.isArray(findCookieItem) ? findCookieItem[0] : undefined
   }
 
   return res
