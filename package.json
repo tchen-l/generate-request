@@ -6,8 +6,9 @@
   "version": "0.0.6",
   "publisher": "tchen",
   "repository": {
-    "url": "git@github.com:895433995/snippets-for-react.git"
+    "url": "git@github.com:895433995/generate-request.git"
   },
+  "icon": "logo.png",
   "scripts": {
     "publish-vsce": "vsce publish",
     "lint": "eslint .",
