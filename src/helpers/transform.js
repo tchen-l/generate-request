@@ -15,6 +15,7 @@ const TypeMapping = {
   8: 'boolean',
   11: 'string',
   12: 'array',
+  13: 'object'
 }
 
 function getMethodType(methodType) {
