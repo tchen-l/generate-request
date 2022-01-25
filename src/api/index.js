@@ -1,7 +1,7 @@
 const axios = require('axios').default
 const qs = require('qs')
-const { apiHost } = require('../config')
-const authInfo = { cookie: undefined, spaceKey: undefined }
+const { apiHost, cookie: defaultCookie } = require('../config')
+const authInfo = { cookie: defaultCookie, spaceKey: undefined }
 
 const service = axios.create({
   baseURL: apiHost,

@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
-const { username, password } = require('./src/config')
+const { username, password, cookie } = require('./src/config')
 const { auth, getInterfaceInfo } = require('./src/services')
 const { transformResult } = require('./src/helpers/transform')
 const { getSnippetTemplate } = require('./src/helpers/snippet')
@@ -22,7 +22,7 @@ function activate(context) {
     // The code you place here will be executed every time your command is executed
     const activeTextEditor = vscode.window.activeTextEditor
 
-    if ([username, password].includes('')) {
+    if ([username, password].includes('') && !cookie) {
       vscode.window.showErrorMessage('请先前往扩展完善基本信息！')
       return
     }
@@ -43,7 +43,7 @@ function activate(context) {
 
         if (statusCode !== '000000') {
           authInfo.cookie = undefined
-          throw Error('请求接口信息失败，请重试')
+          throw Error('请求接口信息失败，请重试！')
         }
 
         const transformData = transformResult(apiInfo)

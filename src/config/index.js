@@ -1,8 +1,9 @@
 const vscode = require('vscode');
-const { username, password } = vscode.workspace.getConfiguration('generateRequest')
+const { username, password, cookie } = vscode.workspace.getConfiguration('generateRequest')
 
 module.exports = {
   apiHost: 'https://yuyidata.w.eolink.com/api',
   username,
-  password
+  password,
+  cookie
 }

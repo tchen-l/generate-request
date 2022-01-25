@@ -3,7 +3,7 @@
   "displayName": "generate-request",
   "description": "语忆前端自动生成接口代码",
   "main": "./extension.js",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "tchen",
   "repository": {
     "url": "git@github.com:895433995/generate-request.git"
@@ -45,6 +45,11 @@
             "type": "string",
             "default": "",
             "description": "密码"
+          },
+          "generateRequest.cookie": {
+            "type": "string",
+            "default": "",
+            "description": "如果填写了cookie，账号密码可不填"
           }
         }
       }

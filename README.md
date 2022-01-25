@@ -12,12 +12,13 @@
 
 * `generateRequest.username`: guest
 * `generateRequest.password`: 123456
+* `generateRequest.cookie`: cookie
 
 ## Release Notes
 
 Users appreciate release notes as you update your extension.
 
-### 0.0.6
+### 0.0.7
 
 ### For more information
 

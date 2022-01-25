@@ -3,7 +3,7 @@ const { axios, authInfo } = require('../api')
 
 const login = (username, password) => {
   if (authInfo.cookie) {
-    return Promise.resolve({ statusCode: '000000', spaceKey: authInfo.spaceKey })
+    return Promise.resolve({ statusCode: '000000' })
   }
   const secretPassword = md5(password)
   return axios.post('/common/Guest/login', {
@@ -14,6 +14,10 @@ const login = (username, password) => {
   })
 }
 
+const getUserInfo = () => {
+  return axios.post('/common/User/getUserInfo')
+}
+
 const auth = (username, password) => {
   const { authInfo } = require('../api')
   return new Promise(async (resolve, reject) => {
@@ -22,13 +26,20 @@ const auth = (username, password) => {
     }, 5 * 1000)
     try {
       const loginRes = (await login(username, password)) || {}
-      authInfo.spaceKey = loginRes.spaceKey
       if (loginRes.statusCode !== '000000') {
         authInfo.cookie = undefined
         authInfo.spaceKey = undefined
         reject({ success: false, message: loginRes.msg })
+        return
       }
-
+      const userRes = (await getUserInfo()) || {}
+      if (userRes.statusCode !== '000000') {
+        authInfo.cookie = undefined
+        authInfo.spaceKey = undefined
+        reject({ success: false, message: userRes.msg })
+        return
+      }
+      authInfo.spaceKey = userRes.userInfo.spaceKey
       resolve({ code: 200 })
     } catch (err) {
       reject({ success: false, message: err.message })
