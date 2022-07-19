@@ -13,7 +13,7 @@ function getParamsString({ methodType = '' }) {
     : 'params';
 }
 
-export function getSnippetTemplate(result) {
+export function getSnippetTemplate(result: any) {
   const {
     see,
     methodType,
@@ -26,7 +26,7 @@ export function getSnippetTemplate(result) {
 
   let finalPath = apiURI;
 
-  const finalPathParamKeys = restfulParams.map((param) => param.key);
+  const finalPathParamKeys = restfulParams.map((param: any) => param?.key);
 
   const paramsString = getParamsString({ methodType });
   const paramsDocString = [

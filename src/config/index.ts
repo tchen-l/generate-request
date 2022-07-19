@@ -8,4 +8,3 @@ export const username = config.username;
 export const password = config.password;
 
 export const cookie = config.cookie;
-

@@ -8,14 +8,14 @@ const service = axios.create({
   baseURL: apiHost,
   headers: {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    'Content-Type': 'application/x-www-form-urlencoded',
-  },
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
 });
 
 service.interceptors.request.use((config) => {
   config.data = stringify(config.data); // 转为formdata数据格式
   if (authInfo.cookie && config.headers) {
-    config.headers['cookie'] = authInfo.cookie;
+    config.headers.cookie = authInfo.cookie;
   }
 
   return config;
@@ -42,9 +42,9 @@ service.interceptors.response.use(
     }
     return Promise.resolve({
       error,
-      success: false,
+      success: false
     });
-  },
+  }
 );
 
 export default service;

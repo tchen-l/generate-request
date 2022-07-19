@@ -1,11 +1,15 @@
 import { underlineToCamel } from './utils';
 
+type RequestMethod = 0 | 1 | 2 | 3;
+
 const requestMethodMapping = {
   0: 'post',
   1: 'get',
   2: 'put',
   3: 'delete',
 };
+
+type ParamNameType = 0 | 3 | 7 | 8 | 11 | 12 | 13;
 
 const typeMapping = {
   0: 'string',
@@ -17,11 +21,11 @@ const typeMapping = {
   13: 'object',
 };
 
-function getMethodType(methodType: number) {
+function getMethodType(methodType: RequestMethod) {
   return requestMethodMapping[methodType] || 'get';
 }
 
-function getParamTypeName(paramType: number) {
+function getParamTypeName(paramType: ParamNameType) {
   return typeMapping[paramType] || '';
 }
 
@@ -38,7 +42,7 @@ function formatParams(params = []) {
   });
 }
 
-export function transformResult(result) {
+export function transformResult(result: any) {
   const {
     baseInfo,
     restfulParam = [],
