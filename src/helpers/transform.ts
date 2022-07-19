@@ -29,17 +29,37 @@ function getParamTypeName(paramType: ParamNameType) {
   return typeMapping[paramType] || '';
 }
 
-function formatParams(params = []) {
-  return params.map((param) => {
-    const { paramKey, paramName = '', paramType, paramNotNull } = param || {};
+type FormatParamsType = {
+  paramKey: string;
+  paramName: string;
+  paramType: ParamNameType;
+  paramNotNull: '0' | '1';
+  childList: FormatParamsType[];
+}[];
 
-    return {
-      key: underlineToCamel(paramKey),
-      name: paramName,
-      type: getParamTypeName(paramType),
-      required: paramNotNull !== '0',
-    };
-  });
+type Result = {
+  key: string;
+  name: string;
+  type: string;
+  required: boolean;
+  children?: Result[];
+};
+function formatParams(params: FormatParamsType & Result[]): Result[] {
+  return (
+    params?.map((param) => {
+      const { paramKey, paramName = '', paramType, paramNotNull } = param || {};
+
+      return {
+        key: underlineToCamel(paramKey),
+        name: paramName,
+        type: getParamTypeName(paramType),
+        required: paramNotNull !== '0',
+        children: param?.childList?.length
+          ? formatParams(param?.childList as any)
+          : undefined,
+      };
+    }) || []
+  );
 }
 
 export function transformResult(result: any) {
@@ -48,6 +68,7 @@ export function transformResult(result: any) {
     restfulParam = [],
     urlParam = [],
     requestInfo = [],
+    resultInfo = [],
   } = result || {};
 
   const {
@@ -70,6 +91,7 @@ export function transformResult(result: any) {
   const urlParams = formatParams(urlParam);
   const restfulParams = formatParams(restfulParam);
   const requestParams = formatParams(requestInfo);
+  const resultData = formatParams(resultInfo?.[0]?.paramList || []);
 
   return {
     apiName,
@@ -79,5 +101,6 @@ export function transformResult(result: any) {
     urlParams,
     restfulParams,
     requestParams,
+    resultData,
   };
 }

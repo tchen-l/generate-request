@@ -13,7 +13,18 @@ function getParamsString({ methodType = '' }) {
     : 'params';
 }
 
-export function getSnippetTemplate(result: any) {
+type Result = {
+  see: string,
+  apiName: string,
+  apiURI: string,
+  methodType: string,
+  requestParams: { key: string, name: string, type: string, required: boolean }[]
+  restfulParams: { key: string, name: string, type: string, required: boolean }[]
+  urlParams: { key: string, name: string, type: string, required: boolean }[]
+  resultData: { key: string, name: string, type: string, required: boolean, children?: Result['resultData'] }[]
+};
+
+export function getSnippetTemplate(result: Result) {
   const {
     see,
     methodType,
@@ -71,6 +82,89 @@ export function \${1:fetchData}(${paramsString}) {
 export function \${1:fetchData}({ ${finalPathParamKeys.join(
     ', ',
   )}, ...${paramsString} }) {
+  return request({
+    url: \`${finalPath}\`,
+    method: '${methodType}',
+    ${paramsString},
+  });
+}
+`;
+}
+
+const getDataType = (data: Result['resultData'] = []) => {
+  const str: string = data?.reduce((prev, cur) => {
+    const { key, name, type, required, children } = cur || {};
+
+    if (type === 'array') {
+      return `${prev}/** ${name} */\n${key}${required ? '':'?'}: Array<\n${children?.length ? `{${getDataType(children)}}` : ''}\n>,\n`;
+    }
+
+    if (type === 'object') {
+      return `${prev}/** ${name} */\n${key}${required ? '':'?'}: {${children?.length ? getDataType(children) : ''}},\n`;
+    }
+
+    return `${prev}/** ${name} */\n${key}${required ? '':'?'}: ${type || 'number'},\n`;
+  }, '');
+
+  return str;
+};
+
+export function getSnippetTemplate2Ts(result: Result) {
+  const {
+    see,
+    methodType,
+    apiName = '',
+    apiURI = '',
+    restfulParams = [],
+    urlParams = [],
+    requestParams = [],
+    resultData
+  } = result || {};
+
+  let finalPath = apiURI;
+
+  const finalPathParamKeys = restfulParams.map((param: any) => param?.key);
+
+  const paramsString = getParamsString({ methodType });
+
+  const paramsDefineString = getDataType([
+    ...urlParams,
+    ...restfulParams,
+    ...requestParams,
+  ]);
+
+  const resStr = getDataType(resultData);
+
+  /**
+   * 注释信息模板
+   */
+  const descTemplate = `type FetchDataParams = {
+    ${paramsDefineString}}
+/**
+ * ${apiName}
+ * @see ${see}
+*/`;
+
+  if (!finalPathParamKeys || !finalPathParamKeys.length) {
+    return `${descTemplate}
+export function \${1:fetchData}(${paramsString}: FetchDataParams): Promise<{ 
+  ${resStr}}> {
+  return request({
+    url: '${finalPath}',
+    method: '${methodType}',
+    ${paramsString},
+  });
+}
+`;
+  }
+
+  finalPath = replacePath(finalPath);
+
+  return `${descTemplate}
+export function \${1:fetchData}({ ${finalPathParamKeys.join(
+    ', ',
+  )}, ...${paramsString} }: FetchDataParams): Promise<{
+  ${resStr}}> {
   return request({
     url: \`${finalPath}\`,
     method: '${methodType}',

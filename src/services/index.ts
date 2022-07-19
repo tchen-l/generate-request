@@ -30,7 +30,7 @@ export const auth = (username: string, password: string) => {
     setTimeout(() => {
       reject(new Error('请求超时！'));
     }, 5 * 1000);
-
+    
     const loginRes = await login(username, password);
     if (loginRes?.statusCode !== '000000') {
       authInfo.cookie = undefined;
@@ -39,12 +39,14 @@ export const auth = (username: string, password: string) => {
       return;
     }
     const userRes = await getUserInfo();
+
     if (userRes?.statusCode !== '000000') {
       authInfo.cookie = undefined;
       authInfo.spaceKey = undefined;
       reject(new Error(userRes.msg));
       return;
     }
+  
     authInfo.spaceKey = userRes?.userInfo?.spaceKey;
     resolve({ code: 200 });
   });
