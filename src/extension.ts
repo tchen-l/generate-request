@@ -1,11 +1,11 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { username, password, cookie } from './src/config';
-import { auth, getInterfaceInfo } from './src/services';
-import { transformResult } from './src/helpers/transform';
-import { getSnippetTemplate } from './src/helpers/snippet';
-import { authInfo } from './src/api';
+import { username, password, cookie } from './config';
+import { auth, getInterfaceInfo } from './services';
+import { transformResult } from './helpers/transform';
+import { getSnippetTemplate } from './helpers/snippet';
+import { authInfo } from './api';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
