@@ -138,8 +138,10 @@ export function getSnippetTemplate2Ts(result: Result) {
   /**
    * 注释信息模板
    */
-  const descTemplate = `type FetchDataParams = {
-    ${paramsDefineString}}
+  const descTemplate = `type \${1:fetchData}Params = {
+    ${paramsDefineString}}\n
+    type \${1:fetchData}Response = {
+    ${resStr}}
 /**
  * ${apiName}
  * @see ${see}
@@ -147,8 +149,7 @@ export function getSnippetTemplate2Ts(result: Result) {
 
   if (!finalPathParamKeys || !finalPathParamKeys.length) {
     return `${descTemplate}
-export function \${1:fetchData}(${paramsString}: FetchDataParams): Promise<{ 
-  ${resStr}}> {
+export function \${1:fetchData}(${paramsString}: \${1:fetchData}Params): Promise<\${1:fetchData}Response> {
   return request({
     url: '${finalPath}',
     method: '${methodType}',
@@ -163,8 +164,7 @@ export function \${1:fetchData}(${paramsString}: FetchDataParams): Promise<{
   return `${descTemplate}
 export function \${1:fetchData}({ ${finalPathParamKeys.join(
     ', ',
-  )}, ...${paramsString} }: FetchDataParams): Promise<{
-  ${resStr}}> {
+  )}, ...${paramsString} }: \${1:fetchData}Params): Promise<\${1:fetchData}Response> {
   return request({
     url: \`${finalPath}\`,
     method: '${methodType}',
