@@ -96,14 +96,14 @@ const getDataType = (data: Result['resultData'] = []) => {
     const { key, name, type, required, children } = cur || {};
 
     if (type === 'array') {
-      return `${prev}/** ${name} */\n${key}${required ? '':'?'}: Array<\n${children?.length ? `{${getDataType(children)}}` : ''}\n>,\n`;
+      return `${prev}/** ${name} */\n${key}${required ? '':'?'}: Array<\n${children?.length ? `{\n${getDataType(children)}}` : ''}\n>,\n`;
     }
 
     if (type === 'object') {
-      return `${prev}/** ${name} */\n${key}${required ? '':'?'}: {${children?.length ? getDataType(children) : ''}},\n`;
+      return `${prev}/** ${name} */\n${key}${required ? '':'?'}: {\n${children?.length ? getDataType(children) : ''}},\n`;
     }
 
-    return `${prev}/** ${name} */\n${key}${required ? '':'?'}: ${type || 'number'},\n`;
+    return `${prev}/** ${name} */ \n${key}${required ? '':'?'}: ${type || 'number'},\n`;
   }, '');
 
   return str;
@@ -138,9 +138,9 @@ export function getSnippetTemplate2Ts(result: Result) {
   /**
    * 注释信息模板
    */
-  const descTemplate = `type \${1:fetchData}Params = {
+  const descTemplate = `type Fetch\${1:Data}Params = {
     ${paramsDefineString}}\n
-    type \${1:fetchData}Response = {
+    type Fetch\${1:Data}Response = {
     ${resStr}}
 /**
  * ${apiName}
@@ -149,7 +149,7 @@ export function getSnippetTemplate2Ts(result: Result) {
 
   if (!finalPathParamKeys || !finalPathParamKeys.length) {
     return `${descTemplate}
-export function \${1:fetchData}(${paramsString}: \${1:fetchData}Params): Promise<\${1:fetchData}Response> {
+export function fetch\${1:Data}(${paramsString}: Fetch\${1:Data}Params): Promise<Fetch\${1:Data}Response> {
   return request({
     url: '${finalPath}',
     method: '${methodType}',
@@ -162,9 +162,9 @@ export function \${1:fetchData}(${paramsString}: \${1:fetchData}Params): Promise
   finalPath = replacePath(finalPath);
 
   return `${descTemplate}
-export function \${1:fetchData}({ ${finalPathParamKeys.join(
+export function fetch\${1:Data}({ ${finalPathParamKeys.join(
     ', ',
-  )}, ...${paramsString} }: \${1:fetchData}Params): Promise<\${1:fetchData}Response> {
+  )}, ...${paramsString} }: Fetch\${1:Data}Params): Promise<Fetch\${1:Data}Response> {
   return request({
     url: \`${finalPath}\`,
     method: '${methodType}',
