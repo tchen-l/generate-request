@@ -44,18 +44,25 @@ type Result = {
   required: boolean;
   children?: Result[];
 };
-function formatParams(params: FormatParamsType & Result[]): Result[] {
+function formatParams(params: FormatParamsType & Result[], dataStructureObj?: { [key: string]: any;}): Result[] {
   return (
     params?.map((param) => {
       const { paramKey, paramName = '', paramType, paramNotNull } = param || {};
 
+      const structure = dataStructureObj?.[paramType];
+      const isComplexType = Boolean(structure);
+      // 目前暂定复杂类型是 object
+      const actualType = isComplexType ? 'object' : getParamTypeName(paramType);
+
+      const childList = isComplexType ? structure?.structureData : param?.childList;
+
       return {
         key: underlineToCamel(paramKey),
         name: paramName,
-        type: getParamTypeName(paramType),
-        required: paramNotNull !== '0',
-        children: param?.childList?.length
-          ? formatParams(param?.childList as any)
+        type: actualType,
+        required: paramNotNull !== '1',
+        children: childList?.length
+          ? formatParams(childList as any)
           : undefined,
       };
     }) || []
@@ -69,7 +76,9 @@ export function transformResult(result: any) {
     urlParam = [],
     requestInfo = [],
     resultInfo = [],
+    dataStructureList: dataStructureObj = {}
   } = result || {};
+  console.log("🚀 ~ file: transform.ts ~ line 73 ~ transformResult ~ result", result);
 
   const {
     apiID = '',
@@ -88,10 +97,10 @@ export function transformResult(result: any) {
    */
   const methodType = getMethodType(apiRequestType);
 
-  const urlParams = formatParams(urlParam);
-  const restfulParams = formatParams(restfulParam);
-  const requestParams = formatParams(requestInfo);
-  const resultData = formatParams(resultInfo?.[0]?.paramList || []);
+  const urlParams = formatParams(urlParam, dataStructureObj);
+  const restfulParams = formatParams(restfulParam, dataStructureObj);
+  const requestParams = formatParams(requestInfo, dataStructureObj);
+  const resultData = formatParams(resultInfo?.[0]?.paramList || [], dataStructureObj);
 
   return {
     apiName,
