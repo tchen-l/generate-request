@@ -15,7 +15,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "prepare": "husky install"
   },
   "engines": {
     "vscode": "^1.59.0"
@@ -68,12 +69,17 @@
     "@typescript-eslint/parser": "^5.30.7",
     "@vscode/test-electron": "^1.6.2",
     "eslint": "^8.20.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-airbnb-typescript-prettier": "^5.0.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.2.4",
     "eslint-plugin-promise": "^6.0.0",
     "glob": "^7.1.7",
+    "husky": "^8.0.1",
     "mocha": "^9.1.1",
+    "prettier": "^2.7.1",
     "typescript": "^4.4.3"
   },
   "dependencies": {

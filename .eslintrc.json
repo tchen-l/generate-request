@@ -6,13 +6,13 @@
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint"],
+  "extends": "airbnb-typescript-prettier",
   "rules": {
-    "@typescript-eslint/naming-convention": "warn",
-    "@typescript-eslint/semi": "warn",
-    "curly": "warn",
-    "eqeqeq": "warn",
-    "no-throw-literal": "warn",
-    "semi": "off"
+    "import/prefer-default-export": 0,
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.test.ts", "**/*.test.tsx", "src/test/**/*.ts"]}],
+    "consistent-return": 0,
+    "import/no-unresolved": ["error", { "ignore": ["vscode"] }],
+    "@typescript-eslint/no-empty-function": 0
   },
   "ignorePatterns": ["out", "dist", "**/*.d.ts"]
 }

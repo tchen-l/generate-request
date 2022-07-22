@@ -9,8 +9,6 @@ const requestMethodMapping = {
   3: 'delete',
 };
 
-type ParamNameType = 0 | 3 | 7 | 8 | 11 | 12 | 13;
-
 const typeMapping = {
   0: 'string',
   3: 'number',
@@ -20,6 +18,8 @@ const typeMapping = {
   12: 'array',
   13: 'object',
 };
+
+type ParamNameType = keyof typeof typeMapping;
 
 function getMethodType(methodType: RequestMethod) {
   return requestMethodMapping[methodType] || 'get';
@@ -44,7 +44,10 @@ type Result = {
   required: boolean;
   children?: Result[];
 };
-function formatParams(params: FormatParamsType & Result[], dataStructureObj?: { [key: string]: any;}): Result[] {
+function formatParams(
+  params: FormatParamsType & Result[],
+  dataStructureObj?: { [key: string]: any },
+): Result[] {
   return (
     params?.map((param) => {
       const { paramKey, paramName = '', paramType, paramNotNull } = param || {};
@@ -54,7 +57,9 @@ function formatParams(params: FormatParamsType & Result[], dataStructureObj?: { 
       // 目前暂定复杂类型是 object
       const actualType = isComplexType ? 'object' : getParamTypeName(paramType);
 
-      const childList = isComplexType ? structure?.structureData : param?.childList;
+      const childList = isComplexType
+        ? structure?.structureData
+        : param?.childList;
 
       return {
         key: underlineToCamel(paramKey),
@@ -76,9 +81,12 @@ export function transformResult(result: any) {
     urlParam = [],
     requestInfo = [],
     resultInfo = [],
-    dataStructureList: dataStructureObj = {}
+    dataStructureList: dataStructureObj = {},
   } = result || {};
-  console.log("🚀 ~ file: transform.ts ~ line 73 ~ transformResult ~ result", result);
+  console.log(
+    '🚀 ~ file: transform.ts ~ line 73 ~ transformResult ~ result',
+    result,
+  );
 
   const {
     apiID = '',
@@ -100,7 +108,10 @@ export function transformResult(result: any) {
   const urlParams = formatParams(urlParam, dataStructureObj);
   const restfulParams = formatParams(restfulParam, dataStructureObj);
   const requestParams = formatParams(requestInfo, dataStructureObj);
-  const resultData = formatParams(resultInfo?.[0]?.paramList || [], dataStructureObj);
+  const resultData = formatParams(
+    resultInfo?.[0]?.paramList || [],
+    dataStructureObj,
+  );
 
   return {
     apiName,

@@ -13,7 +13,7 @@ const login: (
     loginCall: username,
     loginPassword: secretPassword,
     verifyCode: '78b627ad51421de1c05e38855ad26258',
-    client: 0
+    client: 0,
   });
 };
 
@@ -24,13 +24,12 @@ const getUserInfo: () => Promise<{
 }> = () => axios.post('/common/User/getUserInfo');
 
 export const auth = (username: string, password: string) => {
-  const { authInfo } = require('../api');
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     setTimeout(() => {
       reject(new Error('请求超时！'));
     }, 5 * 1000);
-    
+
     const loginRes = await login(username, password);
     if (loginRes?.statusCode !== '000000') {
       authInfo.cookie = undefined;
@@ -46,20 +45,18 @@ export const auth = (username: string, password: string) => {
       reject(new Error(userRes.msg));
       return;
     }
-  
+
     authInfo.spaceKey = userRes?.userInfo?.spaceKey;
     resolve({ code: 200 });
   });
 };
 
 export const getInterfaceInfo: (opts: {
-  apiID: string
+  apiID: string;
 }) => Promise<{ statusCode: string; apiInfo: any }> = ({ apiID }) => {
-  const { authInfo } = require('../api');
-
   return axios.post('/apiManagementPro/Api/getApi', {
     spaceKey: authInfo.spaceKey,
     projectHashKey: 'eQzNgq9ae5c60a4e452990ea471c64a699bd3673890ab88',
-    apiID
+    apiID,
   });
 };

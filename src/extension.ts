@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
     'generate-request.interfaceCode',
     async () => {
       // The code you place here will be executed every time your command is executed
-      const activeTextEditor = vscode.window.activeTextEditor;
+      const { activeTextEditor } = vscode.window;
       if ([username, password].includes('') && !cookie) {
         vscode.window.showErrorMessage('请先前往扩展完善基本信息！');
         return;

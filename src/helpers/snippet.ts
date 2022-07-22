@@ -3,7 +3,7 @@ import { underlineToCamel } from './utils';
 function replacePath(path = '') {
   return path.replace(/\{(.+?)\}/g, (key) => {
     const finalKey = underlineToCamel(key);
-    return '\\$' + finalKey + '';
+    return `\\$${finalKey}`;
   });
 }
 
@@ -14,14 +14,30 @@ function getParamsString({ methodType = '' }) {
 }
 
 type Result = {
-  see: string,
-  apiName: string,
-  apiURI: string,
-  methodType: string,
-  requestParams: { key: string, name: string, type: string, required: boolean }[]
-  restfulParams: { key: string, name: string, type: string, required: boolean }[]
-  urlParams: { key: string, name: string, type: string, required: boolean }[]
-  resultData: { key: string, name: string, type: string, required: boolean, children?: Result['resultData'] }[]
+  see: string;
+  apiName: string;
+  apiURI: string;
+  methodType: string;
+  requestParams: {
+    key: string;
+    name: string;
+    type: string;
+    required: boolean;
+  }[];
+  restfulParams: {
+    key: string;
+    name: string;
+    type: string;
+    required: boolean;
+  }[];
+  urlParams: { key: string; name: string; type: string; required: boolean }[];
+  resultData: {
+    key: string;
+    name: string;
+    type: string;
+    required: boolean;
+    children?: Result['resultData'];
+  }[];
 };
 
 export function getSnippetTemplate(result: Result) {
@@ -96,14 +112,20 @@ const getDataType = (data: Result['resultData'] = []) => {
     const { key, name, type, required, children } = cur || {};
 
     if (type === 'array') {
-      return `${prev}/** ${name} */\n${key}${required ? '':'?'}: Array<\n${children?.length ? `{\n${getDataType(children)}}` : ''}\n>,\n`;
+      return `${prev}/** ${name} */\n${key}${required ? '' : '?'}: Array<\n${
+        children?.length ? `{\n${getDataType(children)}}` : ''
+      }\n>,\n`;
     }
 
     if (type === 'object') {
-      return `${prev}/** ${name} */\n${key}${required ? '':'?'}: {\n${children?.length ? getDataType(children) : ''}},\n`;
+      return `${prev}/** ${name} */\n${key}${required ? '' : '?'}: {\n${
+        children?.length ? getDataType(children) : ''
+      }},\n`;
     }
 
-    return `${prev}/** ${name} */ \n${key}${required ? '':'?'}: ${type || 'number'},\n`;
+    return `${prev}/** ${name} */ \n${key}${required ? '' : '?'}: ${
+      type || 'number'
+    },\n`;
   }, '');
 
   return str;
@@ -118,7 +140,7 @@ export function getSnippetTemplate2Ts(result: Result) {
     restfulParams = [],
     urlParams = [],
     requestParams = [],
-    resultData
+    resultData,
   } = result || {};
 
   let finalPath = apiURI;
