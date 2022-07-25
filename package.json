@@ -3,7 +3,7 @@
   "displayName": "generate-request",
   "description": "语忆前端自动生成接口代码",
   "main": "./out/extension.js",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "publisher": "tchen",
   "repository": {
     "url": "git@github.com:895433995/generate-request.git"

@@ -67,7 +67,7 @@ function formatParams(
         type: actualType,
         required: paramNotNull !== '1',
         children: childList?.length
-          ? formatParams(childList as any)
+          ? formatParams(childList as any, dataStructureObj)
           : undefined,
       };
     }) || []
