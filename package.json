@@ -16,8 +16,7 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
-    "prepare": "husky install",
-    "cm": "cz"
+    "prepare": "husky install"
   },
   "engines": {
     "vscode": "^1.59.0"
